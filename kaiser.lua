@@ -2,11 +2,17 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
 
--- Function to check and switch style to Kaiser
-local function switchToKaiser()
+-- Prompt user for style selection
+local selectedStyle = "Kaiser" -- Default style
+pcall(function()
+    selectedStyle = game:GetService("Players"):FindFirstChildWhichIsA("Player"):RequestStream("Enter Style Name:") or "Kaiser"
+end)
+
+-- Function to check and switch style
+local function switchToStyle(styleName)
     local styleEvent = ReplicatedStorage:FindFirstChild("ChangeStyle") -- Adjust if the event name is different
     if styleEvent then
-        styleEvent:FireServer("Kaiser") -- Attempt to change style to Kaiser
+        styleEvent:FireServer(styleName) -- Attempt to change style
     end
 end
 
@@ -24,5 +30,5 @@ local function autoDribble()
 end
 
 -- Run the functions automatically
-switchToKaiser()
+switchToStyle(selectedStyle)
 task.spawn(autoDribble)
