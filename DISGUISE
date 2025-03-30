@@ -1,14 +1,18 @@
--- FE Disguise Script (Client-Sided) -- Updated with error handling and debugging
+-- FE Disguise Script (Client-Sided) with Movable and Toggleable UI -- Updated to allow UI movement and toggling
 
-local Players = game:GetService("Players") local LocalPlayer = Players.LocalPlayer local ScreenGui = Instance.new("ScreenGui") local Frame = Instance.new("Frame") local TextBox = Instance.new("TextBox") local Button = Instance.new("TextButton")
+local Players = game:GetService("Players") local UserInputService = game:GetService("UserInputService") local LocalPlayer = Players.LocalPlayer local ScreenGui = Instance.new("ScreenGui") local Frame = Instance.new("Frame") local TextBox = Instance.new("TextBox") local Button = Instance.new("TextButton") local ToggleButton = Instance.new("TextButton")
 
-ScreenGui.Parent = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+ScreenGui.ResetOnSpawn = false ScreenGui.Parent = LocalPlayer:FindFirstChildOfClass("PlayerGui")
 
--- UI Setup Frame.Size = UDim2.new(0, 200, 0, 150) Frame.Position = UDim2.new(0.5, -100, 0.5, -75) Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) Frame.Parent = ScreenGui
+-- UI Setup Frame.Size = UDim2.new(0, 200, 0, 150) Frame.Position = UDim2.new(0.5, -100, 0.5, -75) Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) Frame.Active = true Frame.Draggable = true -- Makes the UI movable Frame.Parent = ScreenGui
 
 TextBox.Size = UDim2.new(0.8, 0, 0.2, 0) TextBox.Position = UDim2.new(0.1, 0, 0.2, 0) TextBox.PlaceholderText = "Enter Player Name" TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255) TextBox.TextColor3 = Color3.fromRGB(0, 0, 0) TextBox.Parent = Frame
 
 Button.Size = UDim2.new(0.8, 0, 0.2, 0) Button.Position = UDim2.new(0.1, 0, 0.6, 0) Button.Text = "Disguise" Button.BackgroundColor3 = Color3.fromRGB(100, 100, 255) Button.TextColor3 = Color3.fromRGB(255, 255, 255) Button.Parent = Frame
+
+-- Toggle UI Button ToggleButton.Size = UDim2.new(0, 100, 0, 30) ToggleButton.Position = UDim2.new(0, 10, 0, 10) ToggleButton.Text = "Toggle UI" ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100) ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255) ToggleButton.Parent = ScreenGui
+
+local isVisible = true ToggleButton.MouseButton1Click:Connect(function() isVisible = not isVisible Frame.Visible = isVisible end)
 
 -- Function to change appearance local function DisguiseAsPlayer(targetPlayerName) local targetPlayer = Players:FindFirstChild(targetPlayerName) if not targetPlayer then warn("Player not found: " .. targetPlayerName) return end
 
@@ -42,4 +46,3 @@ print("Successfully disguised as " .. targetPlayerName)
 end
 
 -- Button Click Event Button.MouseButton1Click:Connect(function() local targetName = TextBox.Text if targetName and targetName ~= "" then DisguiseAsPlayer(targetName) else warn("Please enter a valid player name.") end end)
-
