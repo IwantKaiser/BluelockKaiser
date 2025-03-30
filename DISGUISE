@@ -1,55 +1,45 @@
--- FE Disguise Script (Client-Sided)
--- This script creates a UI to select a player and disguise as them locally
+-- FE Disguise Script (Client-Sided) -- Updated with error handling and debugging
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local TextBox = Instance.new("TextBox")
-local Button = Instance.new("TextButton")
+local Players = game:GetService("Players") local LocalPlayer = Players.LocalPlayer local ScreenGui = Instance.new("ScreenGui") local Frame = Instance.new("Frame") local TextBox = Instance.new("TextBox") local Button = Instance.new("TextButton")
 
 ScreenGui.Parent = LocalPlayer:FindFirstChildOfClass("PlayerGui")
 
--- UI Setup
-Frame.Size = UDim2.new(0, 200, 0, 150)
-Frame.Position = UDim2.new(0.5, -100, 0.5, -75)
-Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Frame.Parent = ScreenGui
+-- UI Setup Frame.Size = UDim2.new(0, 200, 0, 150) Frame.Position = UDim2.new(0.5, -100, 0.5, -75) Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) Frame.Parent = ScreenGui
 
-TextBox.Size = UDim2.new(0.8, 0, 0.2, 0)
-TextBox.Position = UDim2.new(0.1, 0, 0.2, 0)
-TextBox.PlaceholderText = "Enter Player Name"
-TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-TextBox.Parent = Frame
+TextBox.Size = UDim2.new(0.8, 0, 0.2, 0) TextBox.Position = UDim2.new(0.1, 0, 0.2, 0) TextBox.PlaceholderText = "Enter Player Name" TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255) TextBox.TextColor3 = Color3.fromRGB(0, 0, 0) TextBox.Parent = Frame
 
-Button.Size = UDim2.new(0.8, 0, 0.2, 0)
-Button.Position = UDim2.new(0.1, 0, 0.6, 0)
-Button.Text = "Disguise"
-Button.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
-Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-Button.Parent = Frame
+Button.Size = UDim2.new(0.8, 0, 0.2, 0) Button.Position = UDim2.new(0.1, 0, 0.6, 0) Button.Text = "Disguise" Button.BackgroundColor3 = Color3.fromRGB(100, 100, 255) Button.TextColor3 = Color3.fromRGB(255, 255, 255) Button.Parent = Frame
 
--- Function to change appearance
-local function DisguiseAsPlayer(targetPlayerName)
-    local targetPlayer = Players:FindFirstChild(targetPlayerName)
-    if targetPlayer and targetPlayer.Character then
-        local targetHumanoid = targetPlayer.Character:FindFirstChild("Humanoid")
-        local localCharacter = LocalPlayer.Character
-        
-        if targetHumanoid and localCharacter then
-            local humanoid = localCharacter:FindFirstChild("Humanoid")
-            if humanoid then
-                humanoid:ApplyDescription(targetHumanoid:GetAppliedDescription())
-            end
-        end
-    end
+-- Function to change appearance local function DisguiseAsPlayer(targetPlayerName) local targetPlayer = Players:FindFirstChild(targetPlayerName) if not targetPlayer then warn("Player not found: " .. targetPlayerName) return end
+
+if not targetPlayer.Character then
+    warn("Target player has no character loaded.")
+    return
 end
 
--- Button Click Event
-Button.MouseButton1Click:Connect(function()
-    local targetName = TextBox.Text
-    if targetName and targetName ~= "" then
-        DisguiseAsPlayer(targetName)
-    end
-end)
+local targetHumanoid = targetPlayer.Character:FindFirstChild("Humanoid")
+if not targetHumanoid then
+    warn("Target player has no humanoid.")
+    return
+end
+
+local localCharacter = LocalPlayer.Character
+if not localCharacter then
+    warn("Your character is not loaded.")
+    return
+end
+
+local humanoid = localCharacter:FindFirstChild("Humanoid")
+if not humanoid then
+    warn("You have no humanoid.")
+    return
+end
+
+-- Apply disguise
+humanoid:ApplyDescription(targetHumanoid:GetAppliedDescription())
+print("Successfully disguised as " .. targetPlayerName)
+
+end
+
+-- Button Click Event Button.MouseButton1Click:Connect(function() local targetName = TextBox.Text if targetName and targetName ~= "" then DisguiseAsPlayer(targetName) else warn("Please enter a valid player name.") end end)
+
